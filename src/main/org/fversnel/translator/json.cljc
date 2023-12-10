@@ -85,7 +85,7 @@
 
 (defn parse
   ([x]
-   (parse {::translation {}} x))
+   (parse {::translation nil} x))
   ([{::keys [translation] :as opts} x]
    (translate translation (parse-json-from x opts))))
 
