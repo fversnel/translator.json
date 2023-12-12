@@ -11,6 +11,7 @@ Add to deps.edn:
 ```
 
 ```clojure
+(require '[clojure.java.io]) ;; optional
 (require :reload '[org.fversnel.translator.json :as json])
 ```
 

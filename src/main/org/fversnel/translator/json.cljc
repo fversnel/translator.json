@@ -11,10 +11,11 @@
    (extend-protocol Parse-Json-From
      java.io.Reader
      (parse-json-from [reader opts]
+       (let [opts (merge
+                   {:key-fn (if (::keywordize-keys? opts) keyword identity)}
+                   opts)]
        (with-open [reader reader]
-         (clojure.data.json/read
-          reader
-          :key-fn (if (::keywordize-keys? opts) keyword identity))))
+         (clojure.data.json/read reader opts))))
 
      java.io.InputStream
      (parse-json-from [stream opts]
@@ -28,9 +29,10 @@
    (extend-protocol Parse-Json-From
      js/String
      (parse-json-from [s opts]
-       (js->clj
-        (.parse js/JSON s)
-        :keywordize-keys (::keywordize-keys? opts)))))
+       (let [opts (merge 
+                   {:keywordize-keys (true? (::keywordize-keys? opts))}
+                   opts)]
+       (js->clj (.parse js/JSON s) opts)))))
 
 #?(:clj
    (extend-type (Class/forName "[B")
@@ -79,8 +81,11 @@
      {}
      json)
 
+    (fn? translation)
+    (translation json)
+    
     :else
-    (translation json)))
+    json))
 
 
 (defn parse
