@@ -35,7 +35,7 @@
        (js->clj (.parse js/JSON s) opts)))))
 
 #?(:clj
-   (extend-type (Class/forName "[B")
+   (extend-type (.getClass (byte-array 0))
      Parse-Json-From
      (parse-json-from [bytes opts]
        (parse-json-from (java.io.ByteArrayInputStream. bytes) opts))))
