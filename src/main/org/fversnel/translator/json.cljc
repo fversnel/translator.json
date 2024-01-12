@@ -14,8 +14,8 @@
        (let [opts (merge
                    {:key-fn (if (::keywordize-keys? opts) keyword identity)}
                    opts)]
-       (with-open [reader reader]
-         (clojure.data.json/read reader opts))))
+         (with-open [reader reader]
+           (clojure.data.json/read reader opts))))
 
      java.io.InputStream
      (parse-json-from [stream opts]
@@ -23,22 +23,23 @@
 
      java.lang.String
      (parse-json-from [string opts]
-       (parse-json-from (java.io.StringReader. string) opts)))
-
-   :cljs
-   (extend-protocol Parse-Json-From
-     js/String
-     (parse-json-from [s opts]
-       (let [opts (merge 
-                   {:keywordize-keys (true? (::keywordize-keys? opts))}
-                   opts)]
-       (js->clj (.parse js/JSON s) opts)))))
+       (parse-json-from (java.io.StringReader. string) opts))))
 
 #?(:clj
-   (extend-type (.getClass (byte-array 0))
+   (extend-type (class (byte-array 0))
      Parse-Json-From
      (parse-json-from [bytes opts]
        (parse-json-from (java.io.ByteArrayInputStream. bytes) opts))))
+
+
+#?(:cljs
+   (extend-protocol Parse-Json-From
+     js/String
+     (parse-json-from [s opts]
+       (let [opts (merge
+                   {:keywordize-keys (true? (::keywordize-keys? opts))}
+                   opts)]
+         (js->clj (.parse js/JSON s) opts)))))
 
 
 (defn translate
@@ -83,7 +84,7 @@
 
     (fn? translation)
     (translation json)
-    
+
     :else
     json))
 
